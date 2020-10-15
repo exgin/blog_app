@@ -33,9 +33,6 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
-# Make errors better looking from ruby on rails
-gem 'better_errors', '~> 2.8', '>= 2.8.3'
-
 # Bulma CSS
 gem 'bulma-rails', '~> 0.9.0'
 
@@ -56,7 +53,10 @@ group :development do
   gem 'guard', '~> 2.16', '>= 2.16.2'
 
   # Automatticaly reloads browser when 'view' files are modified
-  gem 'guard-livereload', '~> 2.5', '>= 2.5.2'
+  gem 'guard-livereload', '~> 2.5', require: false
+
+  # Make errors better looking from ruby on rails
+  gem 'better_errors', '~> 2.8', '>= 2.8.3'
 end
 
 group :test do

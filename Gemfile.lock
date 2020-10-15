@@ -245,7 +245,7 @@ DEPENDENCIES
   byebug
   capybara (>= 2.15)
   guard (~> 2.16, >= 2.16.2)
-  guard-livereload (~> 2.5, >= 2.5.2)
+  guard-livereload (~> 2.5)
   jbuilder (~> 2.7)
   listen (~> 3.2)
   puma (~> 4.1)
