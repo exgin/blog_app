@@ -57,6 +57,9 @@ group :development do
 
   # Make errors better looking from ruby on rails
   gem 'better_errors', '~> 2.8', '>= 2.8.3'
+
+  # For syntax
+  gem 'solargraph'
 end
 
 group :test do

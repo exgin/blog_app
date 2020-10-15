@@ -1,0 +1,955 @@
+= ..ddeelleettee
+
+(from gem actionpack-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPaarraammeetteerrss
+------------------------------------------------------------------------
+  delete(key, &block)
+
+------------------------------------------------------------------------
+
+Deletes a key-value pair from Parameters and returns the value. If key
+is not found, returns nil (or, with optional code block, yields key and
+returns the result). Cf. #extract!, which returns the corresponding
+ActionController::Parameters object.
+
+
+(from gem actionpack-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  BBeehhaavviioorr
+------------------------------------------------------------------------
+  delete(action, **args)
+
+------------------------------------------------------------------------
+
+Simulate a DELETE request with the given parameters and set/volley the
+response. See get for more details.
+
+
+(from gem actionpack-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  FFllaasshhHHaasshh
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+
+(from gem actionpack-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  RReeqquueessttHHeellppeerrss
+------------------------------------------------------------------------
+  delete(path, **args)
+
+------------------------------------------------------------------------
+
+Performs a DELETE request with the given parameters. See
+ActionDispatch::Integration::Session#process for more details.
+
+
+(from gem actionpack-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  MMiiddddlleewwaarreeSSttaacckk
+------------------------------------------------------------------------
+  delete(target)
+
+------------------------------------------------------------------------
+
+
+(from gem actionpack-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  HHttttppHHeellppeerrss
+------------------------------------------------------------------------
+  delete(*args, &block)
+
+------------------------------------------------------------------------
+
+Define a route that only recognizes HTTP DELETE. For supported
+arguments, see match[rdoc-ref:Base#match]
+
+  delete 'broccoli', to: 'food#broccoli'
+
+
+(from gem activemodel-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  EErrrroorrss
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Delete messages for key. Returns the deleted messages.
+
+  person.errors[:name]        # => ["cannot be nil"]
+  person.errors.delete(:name) # => ["cannot be nil"]
+  person.errors[:name]        # => []
+
+
+(from gem activerecord-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  CCoolllleeccttiioonnPPrrooxxyy
+------------------------------------------------------------------------
+  delete(*records)
+
+------------------------------------------------------------------------
+
+Deletes the records supplied from the collection according to the
+strategy specified by the :dependent option. If no :dependent option is
+given, then it will follow the default strategy. Returns an array with
+the deleted records.
+
+For has_many :through associations, the default deletion strategy is
+:delete_all.
+
+For has_many associations, the default deletion strategy is :nullify.
+This sets the foreign keys to NULL.
+
+  class Person < ActiveRecord::Base
+    has_many :pets # dependent: :nullify option by default
+  end
+
+  person.pets.size # => 3
+  person.pets
+  # => [
+  #       #<Pet id: 1, name: "Fancy-Fancy", person_id: 1>,
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  person.pets.delete(Pet.find(1))
+  # => [#<Pet id: 1, name: "Fancy-Fancy", person_id: 1>]
+
+  person.pets.size # => 2
+  person.pets
+  # => [
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  Pet.find(1)
+  # => #<Pet id: 1, name: "Fancy-Fancy", person_id: nil>
+
+If it is set to :destroy all the records are removed by calling their
+destroy method. See destroy for more information.
+
+  class Person < ActiveRecord::Base
+    has_many :pets, dependent: :destroy
+  end
+
+  person.pets.size # => 3
+  person.pets
+  # => [
+  #       #<Pet id: 1, name: "Fancy-Fancy", person_id: 1>,
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  person.pets.delete(Pet.find(1), Pet.find(3))
+  # => [
+  #       #<Pet id: 1, name: "Fancy-Fancy", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  person.pets.size # => 1
+  person.pets
+  # => [#<Pet id: 2, name: "Spook", person_id: 1>]
+
+  Pet.find(1, 3)
+  # => ActiveRecord::RecordNotFound: Couldn't find all Pets with 'id': (1, 3)
+
+If it is set to :delete_all, all the records are deleted
+wwiitthhoouutt calling their destroy method.
+
+  class Person < ActiveRecord::Base
+    has_many :pets, dependent: :delete_all
+  end
+
+  person.pets.size # => 3
+  person.pets
+  # => [
+  #       #<Pet id: 1, name: "Fancy-Fancy", person_id: 1>,
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  person.pets.delete(Pet.find(1))
+  # => [#<Pet id: 1, name: "Fancy-Fancy", person_id: 1>]
+
+  person.pets.size # => 2
+  person.pets
+  # => [
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  Pet.find(1)
+  # => ActiveRecord::RecordNotFound: Couldn't find Pet with 'id'=1
+
+You can pass Integer or String values, it finds the records responding
+to the id and executes delete on them.
+
+  class Person < ActiveRecord::Base
+    has_many :pets
+  end
+
+  person.pets.size # => 3
+  person.pets
+  # => [
+  #       #<Pet id: 1, name: "Fancy-Fancy", person_id: 1>,
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+  person.pets.delete("1")
+  # => [#<Pet id: 1, name: "Fancy-Fancy", person_id: 1>]
+
+  person.pets.delete(2, 3)
+  # => [
+  #       #<Pet id: 2, name: "Spook", person_id: 1>,
+  #       #<Pet id: 3, name: "Choo-Choo", person_id: 1>
+  #    ]
+
+
+(from gem activerecord-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  QQuueeuuee
+------------------------------------------------------------------------
+  delete(element)
+
+------------------------------------------------------------------------
+
+If element is in the queue, remove and return it, or nil.
+
+
+(from gem activerecord-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  DDaattaabbaasseeSSttaatteemmeennttss
+------------------------------------------------------------------------
+  delete(arel, name = nil, binds = [])
+
+------------------------------------------------------------------------
+
+Executes the delete statement and returns the number of rows affected.
+
+
+(from gem activerecord-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPeerrssiisstteennccee
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Deletes the record in the database and freezes this instance to reflect
+that no changes should be made (since they can't be persisted). Returns
+the frozen instance.
+
+The row is simply removed with an SQL DELETE statement on the record's
+primary key, and no callbacks are executed.
+
+Note that this will also delete records marked as
+{#readonly?}[rdoc-ref:Core#readonly?].
+
+To enforce the object's before_destroy and after_destroy callbacks or
+any :dependent association options, use #destroy.
+
+
+(from gem activerecord-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  CCllaassssMMeetthhooddss
+------------------------------------------------------------------------
+  delete(id_or_array)
+
+------------------------------------------------------------------------
+
+Deletes the row with a primary key matching the id argument, using an
+SQL DELETE statement, and returns the number of rows deleted. Active
+Record objects are not instantiated, so the object's callbacks are not
+executed, including any :dependent association options.
+
+You can delete multiple rows at once by passing an Array of ids.
+
+Note: Although it is often much faster than the alternative, #destroy,
+skipping callbacks might bypass business logic in your application that
+ensures referential integrity or performs other essential jobs.
+
+==== EExxaammpplleess
+
+  # Delete a single row
+  Todo.delete(1)
+
+  # Delete multiple rows
+  Todo.delete([2,3,4])
+
+
+(from gem activestorage-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSeerrvviiccee
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Delete the file at the key.
+
+
+(from gem activestorage-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  AAzzuurreeSSttoorraaggeeSSeerrvviiccee
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+
+(from gem activestorage-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  DDiisskkSSeerrvviiccee
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+
+(from gem activestorage-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  GGCCSSSSeerrvviiccee
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+
+(from gem activestorage-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  MMiirrrroorrSSeerrvviiccee
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Delete the file at the key on all services.
+
+
+(from gem activestorage-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SS33SSeerrvviiccee
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+
+(from gem activesupport-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSttoorree
+------------------------------------------------------------------------
+  delete(name, options = nil)
+
+------------------------------------------------------------------------
+
+Deletes an entry in the cache. Returns true if an entry is deleted.
+
+Options are passed to the underlying cache implementation.
+
+
+(from gem activesupport-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  HHaasshhWWiitthhIInnddiiffffeerreennttAAcccceessss
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Removes the specified key from the hash.
+
+
+(from gem activesupport-6.0.3.4)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  UUnnccoouunnttaabblleess
+------------------------------------------------------------------------
+  delete(entry)
+
+------------------------------------------------------------------------
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  AArrrraayy
+------------------------------------------------------------------------
+  ary.delete(obj)            -> item or nil
+  ary.delete(obj) {block}    -> item or result of block
+
+------------------------------------------------------------------------
+
+Deletes all items from self that are equal to obj.
+
+Returns the last deleted item, or nil if no matching item is found.
+
+If the optional code block is given, the result of the block is returned
+if the item is not found.  (To remove nil elements and get an
+informative return value, use Array#compact!)
+
+  a = [ "a", "b", "b", "b", "c" ]
+  a.delete("b")                   #=> "b"
+  a                               #=> ["a", "c"]
+  a.delete("z")                   #=> nil
+  a.delete("z") {"not found"}     #=> "not found"
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  OOrrddeerreeddHHaasshh
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+==== ((UUsseess  ssuuppeerrccllaassss  mmeetthhoodd  RRDDoocc::::AAnnyyMMeetthhoodd::  HHaasshh##ddeelleettee))
+------------------------------------------------------------------------
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSeessssiioonn
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Delete the session from storage.  Also closes the storage.
+
+Note that the session's data is _n_o_t automatically deleted upon the
+session expiring.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  FFiilleeSSttoorree
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Close and delete the session's FileStore file.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  MMeemmoorryySSttoorree
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Delete the session state.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  NNuullllSSttoorree
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Delete the session state.
+
+A no-op.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPSSttoorree
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Close and delete the session's PStore file.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  RRooww
+------------------------------------------------------------------------
+  delete( header )
+  delete( header, offset )
+  delete( index )
+
+------------------------------------------------------------------------
+
+Removes a pair from the row by header or index. The pair is located as
+described in CSV::Row.field(). The deleted pair is returned, or nil if a
+pair could not be found.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  TTaabbllee
+------------------------------------------------------------------------
+  delete(*indexes_or_headers)
+
+------------------------------------------------------------------------
+
+Removes and returns the indicated columns or rows. In the default mixed
+mode indices refer to rows and everything else is assumed to be a column
+headers. Use by_col!() or by_row!() to force the lookup.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  DDBBMM
+------------------------------------------------------------------------
+  dbm.delete(key)
+
+------------------------------------------------------------------------
+
+Deletes an entry from the database.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  DDiirr
+------------------------------------------------------------------------
+  Dir.delete( string ) -> 0
+
+------------------------------------------------------------------------
+
+Deletes the named directory. Raises a subclass of SystemCallError if the
+directory isn't empty.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  EENNVV
+------------------------------------------------------------------------
+  ENV.delete(name)                  -> value
+  ENV.delete(name) { |name| block } -> value
+
+------------------------------------------------------------------------
+
+Deletes the environment variable with name if it exists and returns its
+value:
+  ENV['foo'] = '0'
+  ENV.delete('foo') # => '0'
+
+Returns nil if the named environment variable does not exist:
+  ENV.delete('foo') # => nil
+
+If a block given and the environment variable does not exist, yields
+name to the block and returns nil:
+  ENV.delete('foo') { |name| puts name } # => nil
+  foo
+
+If a block given and the environment variable exists, deletes the
+environment variable and returns its value (ignoring the block):
+  ENV['foo'] = '0'
+  ENV.delete('foo') { |name| fail 'ignored' } # => "0"
+
+Raises an exception if name is invalid. See {Invalid Names and
+Values}[#class-ENV-label-Invalid-Names+and+Values].
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  FFiillee
+------------------------------------------------------------------------
+  File.delete(file_name, ...)  -> integer
+
+------------------------------------------------------------------------
+
+Deletes the named files, returning the number of names passed as
+arguments. Raises an exception on any error. Since the underlying
+implementation relies on the unlink(2) system call, the type of
+exception raised depends on its error type (see
+https://linux.die.net/man/2/unlink) and has the form of e.g.
+Errno::ENOENT.
+
+See also Dir::rmdir.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  GGDDBBMM
+------------------------------------------------------------------------
+  gdbm.delete(key) -> value or nil
+
+------------------------------------------------------------------------
+
+Removes the key-value-pair with the specified _k_e_y from this
+database and returns the corresponding _v_a_l_u_e. Returns nil if
+the database is empty.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSoouurrcceeLLiisstt
+------------------------------------------------------------------------
+  delete(source)
+
+------------------------------------------------------------------------
+
+Deletes source from the source list which may be a Gem::Source or a URI.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  HHaasshh
+------------------------------------------------------------------------
+  hsh.delete(key)                   -> value
+  hsh.delete(key) {| key | block }  -> value
+
+------------------------------------------------------------------------
+
+Deletes the key-value pair and returns the value from _h_s_h whose
+key is equal to _k_e_y. If the key is not found, it returns
+_n_i_l. If the optional code block is given and the key is not found,
+pass in the key and return the result of _b_l_o_c_k.
+
+  h = { "a" => 100, "b" => 200 }
+  h.delete("a")                              #=> 100
+  h.delete("z")                              #=> nil
+  h.delete("z") { |el| "#{el} not found" }   #=> "z not found"
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  JJoobbMMaannaaggeerr
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Deletes the job at the given key.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  FFTTPP
+------------------------------------------------------------------------
+  delete(filename)
+
+------------------------------------------------------------------------
+
+Deletes a file on the server.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  HHTTTTPP
+------------------------------------------------------------------------
+  delete(path, initheader = {'Depth' => 'Infinity'})
+
+------------------------------------------------------------------------
+
+Sends a DELETE request to the path and gets a response, as an
+HTTPResponse object.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  HHTTTTPPHHeeaaddeerr
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Removes a header field, specified by case-insensitive key.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  IIMMAAPP
+------------------------------------------------------------------------
+  delete(mailbox)
+
+------------------------------------------------------------------------
+
+Sends a DELETE command to remove the mailbox.
+
+A Net::IMAP::NoResponseError is raised if a mailbox with that name
+cannot be deleted, either because it does not exist or because the
+client does not have permission to delete it.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPOOPPMMaaiill
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Marks a message for deletion on the server.  Deletion does not actually
+occur until the end of the session; deletion may be cancelled for
+_a_l_l marked messages by calling POP3#reset().
+
+This method raises a POPError if an error occurs.
+
+=== EExxaammppllee
+
+  POP3.start('pop.example.com', 110,
+             'YourAccount', 'YourPassword') do |pop|
+    n = 1
+    pop.mails.each do |popmail|
+      File.open("inbox/#{n}", 'w') do |f|
+        f.write popmail.pop
+      end
+      popmail.delete         ####
+      n += 1
+    end
+  end
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPSSttoorree
+------------------------------------------------------------------------
+  delete(name)
+
+------------------------------------------------------------------------
+
+Removes an object hierarchy from the data store, by _n_a_m_e.
+
+WWAARRNNIINNGG:  This method is only valid in a
+PStore#transaction and it cannot be read-only.  It will raise
+PStore::Error if called at any other time.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPaatthhnnaammee
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+Removes a file or directory, using File.unlink if self is a file, or
+Dir.unlink as necessary.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  AAttttrriibbuutteess
+------------------------------------------------------------------------
+  delete( attribute )
+
+------------------------------------------------------------------------
+
+==== ((UUsseess  ssuuppeerrccllaassss  mmeetthhoodd  RRDDoocc::::AAnnyyMMeetthhoodd::  HHaasshh##ddeelleettee))
+------------------------------------------------------------------------
+
+Removes an attribute
+attribute:
+  either a String, which is the name of the attribute to remove --
+  namespaces are significant here -- or the attribute to remove.
+
+Returns:
+  the owning element
+
+  doc = Document.new "<a y:foo='0' x:foo='1' foo='3' z:foo='4'/>"
+  doc.root.attributes.delete 'foo'   #-> <a y:foo='0' x:foo='1' z:foo='4'/>"
+  doc.root.attributes.delete 'x:foo' #-> <a y:foo='0' z:foo='4'/>"
+  attr = doc.root.attributes.get_attribute('y:foo')
+  doc.root.attributes.delete attr    #-> <a z:foo='4'/>"
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  EElleemmeennttss
+------------------------------------------------------------------------
+  delete(element)
+
+------------------------------------------------------------------------
+
+Deletes a child Element
+element:
+  Either an Element, which is removed directly; an xpath, where the
+  first matching child is removed; or an Integer, where the n'th Element
+  is removed.
+
+Returns:
+  the removed child
+
+  doc = Document.new '<a><b/><c/><c id="1"/></a>'
+  b = doc.root.elements[1]
+  doc.root.elements.delete b           #-> <a><c/><c id="1"/></a>
+  doc.elements.delete("a/c[@id='1']")  #-> <a><c/></a>
+  doc.root.elements.delete 1           #-> <a/>
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  PPaarreenntt
+------------------------------------------------------------------------
+  delete( object )
+
+------------------------------------------------------------------------
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  IISSeett
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSyymmbboollTTaabbllee
+------------------------------------------------------------------------
+  delete(sym)
+
+------------------------------------------------------------------------
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  TTuupplleeBBaagg
+------------------------------------------------------------------------
+  delete(tuple)
+
+------------------------------------------------------------------------
+
+Removes tuple from the TupleBag.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  TTuupplleeBBiinn
+------------------------------------------------------------------------
+  delete(tuple)
+
+------------------------------------------------------------------------
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSDDBBMM
+------------------------------------------------------------------------
+  sdbm.delete(key) -> value or nil
+  sdbm.delete(key) { |key, value| ... }
+
+------------------------------------------------------------------------
+
+Deletes the key-value pair corresponding to the given key. If the key
+exists, the deleted value will be returned, otherwise nil.
+
+If a block is provided, the deleted key and value will be passed to the
+block as arguments. If the key does not exist in the database, the value
+will be nil.
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSeett
+------------------------------------------------------------------------
+  delete(o)
+
+------------------------------------------------------------------------
+
+Deletes the given object from the set and returns self.  Use subtract to
+delete many items at once.
+
+
+(from gem solargraph-0.39.17)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  HHoosstt
+------------------------------------------------------------------------
+  delete(uri)
+
+------------------------------------------------------------------------
+
+Delete the specified file from the library.
+
+@param uri [String] The file uri. @return [void]
+
+
+(from gem solargraph-0.39.17)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  LLiibbrraarryy
+------------------------------------------------------------------------
+  delete(filename)
+
+------------------------------------------------------------------------
+
+Delete a file from the library. Deleting a file will make it unavailable
+for checkout and optionally remove it from the workspace unless the
+workspace configuration determines that it should still exist.
+
+@param filename [String] @return [Boolean] True if the file was deleted
+
+
+(from gem solargraph-0.39.17)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSoollaarrggrraapphh::::PPiinn::::RReeffeerreennccee::::OOvveerrrriiddee
+------------------------------------------------------------------------
+
+@return [Array<Symbol>]
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSttrriinngg
+------------------------------------------------------------------------
+  str.delete([other_str]+)   -> new_str
+
+------------------------------------------------------------------------
+
+Returns a copy of _s_t_r with all characters in the intersection of
+its arguments deleted. Uses the same rules for building the set of
+characters as String#count.
+
+  "hello".delete "l","lo"        #=> "heo"
+  "hello".delete "lo"            #=> "he"
+  "hello".delete "aeiou", "^e"   #=> "hell"
+  "hello".delete "ej-m"          #=> "ho"
+
+
+(from gem yard-0.9.25)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSyymmbboollHHaasshh
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Deleted a key and value associated with it @param [#to_sym] key the key
+to delete @return [void]
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  TTeemmppffiillee
+------------------------------------------------------------------------
+  delete()
+
+------------------------------------------------------------------------
+
+(This method is an alias for Tempfile#unlink.)
+
+Unlinks (deletes) the file from the filesystem. One should always unlink
+the file after using it, as is explained in the "Explicit close" good
+practice section in the Tempfile overview:
+
+  file = Tempfile.new('foo')
+  begin
+     # ...do something with file...
+  ensure
+     file.close
+     file.unlink   # deletes the temp file
+  end
+
+=== UUnnlliinnkk--bbeeffoorree--cclloossee
+
+On POSIX systems it's possible to unlink a file before closing it. This
+practice is explained in detail in the Tempfile overview (section
+"Unlink after creation"); please refer there for more information.
+
+However, unlink-before-close may not be supported on non-POSIX operating
+systems. Microsoft Windows is the most notable case: unlinking a
+non-closed file will result in an error, which this method will silently
+ignore. If you want to practice unlink-before-close whenever possible,
+then you should write code like this:
+
+  file = Tempfile.new('foo')
+  file.unlink   # On Windows this silently fails.
+  begin
+     # ... do something with file ...
+  ensure
+     file.close!   # Closes the file handle. If the file wasn't unlinked
+                   # because #unlink failed, then this method will attempt
+                   # to do so again.
+  end
+
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  DDBBMM
+------------------------------------------------------------------------
+  ydbm.delete(key)
+
+------------------------------------------------------------------------
+
+Deletes value from database associated with key.
+
+Returns value or nil.
+
+
+(from gem yard-0.9.25)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  OOppttiioonnss
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Deletes an option value for key
+
+@param [Symbol, String] key the key to delete a value for @return
+[Object] the value that was deleted
+
+
+(from gem yard-0.9.25)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  RReeggiissttrryy
+------------------------------------------------------------------------
+  delete(object)
+
+------------------------------------------------------------------------
+
+Deletes an object from the registry @param [CodeObjects::Base] object
+the object to remove @return [void]
+
+
+(from gem yard-0.9.25)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  RReeggiissttrryySSttoorree
+------------------------------------------------------------------------
+  delete(key)
+
+------------------------------------------------------------------------
+
+Deletes an object at a given path @param [#to_sym] key the key to delete
+@return [void]
+
+
