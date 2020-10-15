@@ -1,1 +1,24 @@
-<h1 class="title">Blog Index</h1>
+<% content_for :page_title, "Index" %>
+
+<section class="section">
+    <div class="container">
+        <% @posts.each do |post| %>
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-content">
+                    <%# link_to (item to be turned to an anchor) (route to go to specific) %>
+                        <p class="title is-4"> <%= link_to post.title, post %> </p>
+                </div>
+            </div>
+            <div class="content">
+                <%= post.content %>
+            </div>
+            <div class="content-count">
+                <span class="tag is-rounded"> <%# will be added later %> </span>
+            </div>
+            </div>
+        </div>
+        <% end %>
+    </div>
+</section>
